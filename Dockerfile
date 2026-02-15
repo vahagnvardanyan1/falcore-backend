@@ -10,7 +10,7 @@ COPY src/VTS.DAL/VTS.DAL.csproj ./src/VTS.DAL/
 RUN dotnet restore "VTS.sln"
 
 COPY . .
-RUN dotnet publish "src/VTS.API/VTS.API.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "src/VTS.API/VTS.API.csproj" -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
@@ -18,6 +18,7 @@ COPY --from=build /app/publish .
 
 ARG PORT=80
 ENV ASPNETCORE_URLS=http://+:${PORT}
+ENV ASPNETCORE_ENVIRONMENT=Development
 EXPOSE ${PORT}
 
 ENTRYPOINT ["dotnet", "VTS.API.dll"]
