@@ -18,12 +18,12 @@ public class MapperProfile : Profile
         CreateMap<VehicleInsurance, VehicleInsuranceDto>().ReverseMap();
         CreateMap<VehicleTechnicalInspection, VehicleTechnicalInspectionDto>().ReverseMap();
         CreateMap<Notification, NotificationDto>().ReverseMap();
-        
+
         CreateMap<GeoFence, GeofenceDto>()
-            .ForMember(dest => dest.Center, opt => opt.MapFrom(src => new PointDto 
-            { 
-                Latitude = src.Center.Y, 
-                Longitude = src.Center.X 
+            .ForMember(dest => dest.Center, opt => opt.MapFrom(src => new PointDto
+            {
+                Latitude = src.Center.Y,
+                Longitude = src.Center.X
             }))
             .ReverseMap()
             .ForMember(dest => dest.Center, opt => opt.MapFrom(src => CreatePoint(src.Center)));
@@ -32,6 +32,8 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.AlertType, opt => opt.MapFrom(src => (FuelAlertTypeDto)src.AlertType))
             .ReverseMap()
             .ForMember(dest => dest.AlertType, opt => opt.MapFrom(src => (FuelAlertType)src.AlertType));
+
+        CreateMap<VehiclePart, VehiclePartDto>().ReverseMap();
     }
 
     private static Point CreatePoint(PointDto dto)
