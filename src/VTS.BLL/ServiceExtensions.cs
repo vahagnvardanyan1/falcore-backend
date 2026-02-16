@@ -18,6 +18,7 @@ public static class ServiceExtensions
         services.AddScoped<IGeofenceService, GeofenceService>();
         services.AddScoped<IFuelAlertService, FuelAlertService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IVehiclePartService, VehiclePartService>();
 
         var distanceCalculationSettings = new DistanceCalculationSettings();
         configuration.GetSection(DistanceCalculationSettings.Section).Bind(distanceCalculationSettings);

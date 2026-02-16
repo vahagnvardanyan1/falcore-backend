@@ -30,6 +30,7 @@ public static class ServiceExtensions
         services.AddScoped<IGeofenceRepository, GeofenceRepository>();
         services.AddScoped<IFuelAlertRepository, FuelAlertRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IVehiclePartRepository, VehiclePartRepository>();
 
         return services;
     }
