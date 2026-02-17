@@ -8,7 +8,10 @@ using NetTopologySuite.Geometries;
 
 namespace VTS.BLL.Services;
 
-public class GeofenceService(IGeofenceRepository repo, IMapper mapper) : IGeofenceService
+public class GeofenceService(
+    IGeofenceRepository repo,
+    IVehicleRepository vehicleRepository,
+    IMapper mapper) : IGeofenceService
 {
     private static readonly GeometryFactory GeometryFactory = new(new PrecisionModel(), 4326);
 
@@ -26,7 +29,7 @@ public class GeofenceService(IGeofenceRepository repo, IMapper mapper) : IGeofen
 
     public async Task<GeofenceDto> CreateAsync(GeofenceDto dto, CancellationToken cancellationToken = default)
     {
-        ValidateGeofenceDto(dto);
+        var _ = await vehicleRepository.GetByIdAsync(dto.VehicleId, cancellationToken) ?? throw new ArgumentException($"Vehicle with ID {dto.VehicleId} does not exist.");
         var entity = mapper.Map<GeoFence>(dto);
         var created = await repo.AddAsync(entity, cancellationToken);
         return mapper.Map<GeofenceDto>(created);
@@ -37,7 +40,6 @@ public class GeofenceService(IGeofenceRepository repo, IMapper mapper) : IGeofen
         var existing = await repo.GetByIdAsync(id, cancellationToken);
         if (existing is null) return false;
 
-        ValidateGeofenceDto(dto);
         mapper.Map(dto, existing);
         await repo.UpdateAsync(existing, cancellationToken);
         return true;
@@ -62,23 +64,8 @@ public class GeofenceService(IGeofenceRepository repo, IMapper mapper) : IGeofen
     {
         var point = GeometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         var all = await repo.GetAllAsync(cancellationToken);
-        
+
         var containing = all.Where(g => g.Center != null && GeospatialHelper.IsPointInCircle(point, g.Center, g.RadiusMeters)).ToList();
         return containing.Select(mapper.Map<GeofenceDto>);
-    }
-
-    private static void ValidateGeofenceDto(GeofenceDto dto)
-    {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException("Geofence name is required.");
-
-        if (dto.VehicleId <= 0)
-            throw new ArgumentException("Valid VehicleId is required.");
-
-        if (dto.Center is null || double.IsNaN(dto.Center.Latitude) || double.IsNaN(dto.Center.Longitude))
-            throw new ArgumentException("Valid center coordinates are required.");
-
-        if (dto.RadiusMeters <= 0)
-            throw new ArgumentException("RadiusMeters must be greater than 0.");
     }
 }
