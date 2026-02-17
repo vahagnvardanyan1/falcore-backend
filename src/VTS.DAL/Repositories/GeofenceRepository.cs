@@ -6,7 +6,7 @@ namespace VTS.DAL.Repositories;
 public class GeofenceRepository(VTSContext db) : IGeofenceRepository
 {
     public async Task<IEnumerable<GeoFence>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await db.GeoFences.AsNoTracking().ToListAsync(cancellationToken);
+        await db.GeoFences.AsNoTracking().OrderByDescending(g => g.CreatedDateUtc).ToListAsync(cancellationToken);
 
     public async Task<GeoFence> GetByIdAsync(long id, CancellationToken cancellationToken = default) =>
         await db.GeoFences.FindAsync([id], cancellationToken);
@@ -31,5 +31,5 @@ public class GeofenceRepository(VTSContext db) : IGeofenceRepository
     }
 
     public async Task<IEnumerable<GeoFence>> GetByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken = default) =>
-        await db.GeoFences.AsNoTracking().Where(g => g.VehicleId == vehicleId).ToListAsync(cancellationToken);
+        await db.GeoFences.AsNoTracking().Where(g => g.VehicleId == vehicleId).OrderByDescending(g => g.CreatedDateUtc).ToListAsync(cancellationToken);
 }

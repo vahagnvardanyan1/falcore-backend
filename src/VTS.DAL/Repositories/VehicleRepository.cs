@@ -6,7 +6,7 @@ namespace VTS.DAL.Repositories;
 public class VehicleRepository(VTSContext db) : IVehicleRepository
 {
     public async Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await db.Vehicles.AsNoTracking().ToListAsync(cancellationToken);
+        await db.Vehicles.AsNoTracking().OrderByDescending(v => v.CreatedDateUtc).ToListAsync(cancellationToken);
 
     public async Task<Vehicle> GetByIdAsync(long id, CancellationToken cancellationToken = default) =>
         await db.Vehicles.FindAsync([id], cancellationToken);
@@ -31,7 +31,7 @@ public class VehicleRepository(VTSContext db) : IVehicleRepository
     }
 
     public async Task<IEnumerable<Vehicle>> GetByTenantAsync(long tenantId, CancellationToken cancellationToken = default) =>
-        await db.Vehicles.AsNoTracking().Where(v => v.TenantId == tenantId).ToListAsync(cancellationToken);
+        await db.Vehicles.AsNoTracking().Where(v => v.TenantId == tenantId).OrderByDescending(v => v.CreatedDateUtc).ToListAsync(cancellationToken);
 
     public async Task<double?> GetFuelLevel(long vehicleId, CancellationToken cancellationToken = default)
     {

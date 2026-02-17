@@ -6,7 +6,7 @@ namespace VTS.DAL.Repositories;
 public class VehicleInsuranceRepository(VTSContext db) : IVehicleInsuranceRepository
 {
     public async Task<IEnumerable<VehicleInsurance>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await db.VehicleInsurances.AsNoTracking().ToListAsync(cancellationToken);
+        await db.VehicleInsurances.AsNoTracking().OrderByDescending(v => v.CreatedDateUtc).ToListAsync(cancellationToken);
 
     public async Task<VehicleInsurance> GetByIdAsync(long id, CancellationToken cancellationToken = default) =>
         await db.VehicleInsurances.FindAsync([id], cancellationToken);
@@ -31,5 +31,5 @@ public class VehicleInsuranceRepository(VTSContext db) : IVehicleInsuranceReposi
     }
 
     public async Task<IEnumerable<VehicleInsurance>> GetByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken = default) =>
-        await db.VehicleInsurances.AsNoTracking().Where(x => x.VehicleId == vehicleId).ToListAsync(cancellationToken);
+        await db.VehicleInsurances.AsNoTracking().Where(x => x.VehicleId == vehicleId).OrderByDescending(v => v.CreatedDateUtc).ToListAsync(cancellationToken);
 }

@@ -8,7 +8,7 @@ public class TenantRepository(VTSContext db) : ITenantRepository
     private readonly VTSContext _db = db;
 
     public async Task<IEnumerable<Tenant>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await _db.Tenants.AsNoTracking().ToListAsync(cancellationToken);
+        await _db.Tenants.AsNoTracking().OrderByDescending(t => t.CreatedDateUtc).ToListAsync(cancellationToken);
 
     public async Task<Tenant> GetByIdAsync(long id, CancellationToken cancellationToken = default) =>
         await _db.Tenants.FindAsync([id], cancellationToken);

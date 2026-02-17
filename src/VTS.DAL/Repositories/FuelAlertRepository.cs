@@ -24,6 +24,7 @@ public class FuelAlertRepository(VTSContext dbContext) : IFuelAlertRepository
         return await dbContext.FuelAlerts
             .AsNoTracking()
             .Where(x => x.VehicleId == vehicleId)
+            .OrderByDescending(x => x.CreatedDateUtc)
             .ToListAsync(cancellationToken);
     }
 
@@ -36,7 +37,7 @@ public class FuelAlertRepository(VTSContext dbContext) : IFuelAlertRepository
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
-        var fuelAlert = await dbContext.FuelAlerts.FindAsync(new object[] { id }, cancellationToken: cancellationToken);
+        var fuelAlert = await dbContext.FuelAlerts.FindAsync([id], cancellationToken: cancellationToken);
         if (fuelAlert != null)
         {
             dbContext.FuelAlerts.Remove(fuelAlert);

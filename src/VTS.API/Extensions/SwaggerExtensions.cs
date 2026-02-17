@@ -22,6 +22,9 @@ public static class SwaggerExtensions
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "VTS API v1");
             c.RoutePrefix = string.Empty;
+            c.EnableTryItOutByDefault();
+            c.DisplayOperationId();
+            c.DisplayRequestDuration();
         });
 
         return app;

@@ -6,7 +6,7 @@ namespace VTS.DAL.Repositories;
 public class VehiclePartRepository(VTSContext db) : IVehiclePartRepository
 {
     public async Task<IEnumerable<VehiclePart>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await db.VehicleParts.AsNoTracking().ToListAsync(cancellationToken);
+        await db.VehicleParts.AsNoTracking().OrderByDescending(v => v.CreatedDateUtc).ToListAsync(cancellationToken);
 
     public async Task<VehiclePart> GetByIdAsync(long id, CancellationToken cancellationToken = default) =>
         await db.VehicleParts.FindAsync([id], cancellationToken);
@@ -31,5 +31,5 @@ public class VehiclePartRepository(VTSContext db) : IVehiclePartRepository
     }
 
     public async Task<IEnumerable<VehiclePart>> GetByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken = default) =>
-        await db.VehicleParts.AsNoTracking().Where(x => x.VehicleId == vehicleId).ToListAsync(cancellationToken);
+        await db.VehicleParts.AsNoTracking().Where(x => x.VehicleId == vehicleId).OrderByDescending(v => v.CreatedDateUtc).ToListAsync(cancellationToken);
 }
