@@ -17,7 +17,7 @@ builder.Services.AddTrackerServices(builder.Configuration);
 builder.Services.AddNotificationServices();
 builder.Services.SetupJobs(builder.Configuration);
 
-var app = builder.Build();
+var app = builder.Build(); 
 
 app.MapSwaggerDocumentation();
 app.UseCors(policy => policy.SetIsOriginAllowed(_ => true)
