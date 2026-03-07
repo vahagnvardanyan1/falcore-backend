@@ -71,7 +71,7 @@ public class VehiclePartServiceJob(
 
             try
             {
-                var delay = TimeSpan.FromHours(_jobSettings.VehicleInsuranceCheckIntervalHours);
+                var delay = TimeSpan.FromHours(_jobSettings.VehiclePartCheckIntervalHours);
                 await Task.Delay(delay, stoppingToken);
             }
             catch (TaskCanceledException) { }

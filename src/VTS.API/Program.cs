@@ -19,6 +19,7 @@ builder.Services.SetupJobs(builder.Configuration);
 
 var app = builder.Build(); 
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapSwaggerDocumentation();
 app.UseCors(policy => policy.SetIsOriginAllowed(_ => true)
                              .AllowAnyHeader()
@@ -27,7 +28,6 @@ app.UseCors(policy => policy.SetIsOriginAllowed(_ => true)
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
-app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 app.Run();

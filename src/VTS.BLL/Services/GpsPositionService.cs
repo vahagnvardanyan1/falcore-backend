@@ -87,7 +87,7 @@ public class GpsPositionService(
 
             if (segment < distanceCalculationSettings.MinDistance) continue;
             if (segment > distanceCalculationSettings.MaxDistance) continue;
-            if ((segment / seconds) > distanceCalculationSettings.MaxSpeedKmh) continue;
+            if ((segment / seconds * 3.6) > distanceCalculationSettings.MaxSpeedKmh) continue;
 
             totalMeters += segment;
         }
@@ -173,7 +173,7 @@ public class GpsPositionService(
                 if (segmentMeters >= distanceCalculationSettings.MinDistance &&
                     segmentMeters <= distanceCalculationSettings.MaxDistance &&
                     seconds > 0 &&
-                    (segmentMeters / seconds) <= distanceCalculationSettings.MaxSpeedKmh)
+                    (segmentMeters / seconds * 3.6) <= distanceCalculationSettings.MaxSpeedKmh)
                 {
                     distanceSinceStop += segmentMeters;
                 }
