@@ -1,8 +1,10 @@
 using VTS.DAL.Entities.Core;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace VTS.DAL.Entities;
 
-public class VTSContext(DbContextOptions<VTSContext> options) : DbContext(options)
+public class VTSContext(DbContextOptions<VTSContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, long, IdentityUserClaim<long>, ApplicationUserRole, IdentityUserLogin<long>, IdentityRoleClaim<long>, IdentityUserToken<long>>(options)
 {
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
@@ -13,6 +15,8 @@ public class VTSContext(DbContextOptions<VTSContext> options) : DbContext(option
     public DbSet<GeoFence> GeoFences { get; set; }
     public DbSet<FuelAlert> FuelAlerts { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<UserTenantAccess> UserTenantAccesses { get; set; }
+    public DbSet<UserVehicleAccess> UserVehicleAccesses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,6 +36,62 @@ public class VTSContext(DbContextOptions<VTSContext> options) : DbContext(option
             }
         }
 
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.ToTable("AspNetUsers");
+            entity.Property(x => x.FirstName).HasMaxLength(100);
+            entity.Property(x => x.LastName).HasMaxLength(100);
+            entity.HasMany(x => x.UserRoles)
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ApplicationRole>(entity =>
+        {
+            entity.ToTable("AspNetRoles");
+            entity.Property(x => x.Description).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<ApplicationUserRole>(entity =>
+        {
+            entity.ToTable("AspNetUserRoles");
+            entity.HasOne(x => x.User)
+                .WithMany(x => x.UserRoles)
+                .HasForeignKey(x => x.UserId);
+            entity.HasOne(x => x.Role)
+                .WithMany(x => x.UserRoles)
+                .HasForeignKey(x => x.RoleId);
+        });
+
+        modelBuilder.Entity<UserTenantAccess>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.HasOne(x => x.User)
+                .WithMany(x => x.TenantAccesses)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(x => x.Tenant)
+                .WithMany()
+                .HasForeignKey(x => x.TenantId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(x => new { x.UserId, x.TenantId }).IsUnique();
+        });
+
+        modelBuilder.Entity<UserVehicleAccess>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.HasOne(x => x.User)
+                .WithMany(x => x.VehicleAccesses)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(x => x.Vehicle)
+                .WithMany()
+                .HasForeignKey(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(x => new { x.UserId, x.VehicleId }).IsUnique();
+        });
+
         modelBuilder.Entity<Tenant>(entity =>
         {
             entity.HasKey(x => x.Id);
@@ -44,6 +104,11 @@ public class VTSContext(DbContextOptions<VTSContext> options) : DbContext(option
                     .WithOne(x => x.Tenant)
                     .HasForeignKey(x => x.TenantId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasMany(x => x.UserTenantAccesses)
+                    .WithOne(x => x.Tenant)
+                    .HasForeignKey(x => x.TenantId)
+                    .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Vehicle>(entity =>

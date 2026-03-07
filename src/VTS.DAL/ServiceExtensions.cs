@@ -1,5 +1,6 @@
 using VTS.DAL.Entities;
 using VTS.DAL.Interfaces;
+using VTS.Common.Utilities;
 using VTS.DAL.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,9 @@ public static class ServiceExtensions
         services.AddScoped<IFuelAlertRepository, FuelAlertRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IVehiclePartRepository, VehiclePartRepository>();
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserProvider, UserProvider>();
 
         return services;
     }

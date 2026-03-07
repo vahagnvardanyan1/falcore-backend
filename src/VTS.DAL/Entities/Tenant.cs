@@ -10,4 +10,5 @@ public class Tenant : BaseEntity
     public Guid APIKey { get; set; }
 
     public ICollection<Vehicle> Vehicles { get; set; }
+    public ICollection<UserTenantAccess> UserTenantAccesses { get; set; }
 }
